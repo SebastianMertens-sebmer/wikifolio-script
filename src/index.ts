@@ -1,29 +1,31 @@
 import dotenv from "dotenv";
 dotenv.config();
-import moment from "moment";
+
 import prompts from "prompts";
 import { createRecords, getRecordList } from "./services/airtable";
-import wikifolioApi, { getLast24Trades } from "./services/wikifolio";
-const airtable = require("./services/airtable");
+import { getLast24Trades, initWikifolio } from "./services/wikifolio";
 
 (async () => {
   console.warn("Your credentials will not be stored.");
 
   const arg = (process.argv || []).slice(2);
 
-  // const { email } = await prompts({
-  //   type: "text",
-  //   name: "email",
-  //   initial: arg[0],
-  //   message: "Wikifolio email",
-  // });
+  const { email } = await prompts({
+    type: "text",
+    name: "email",
+    initial: arg[0],
+    message: "Wikifolio email",
+  });
 
-  // const { password } = await prompts({
-  //   type: "password",
-  //   name: "password",
-  //   initial: arg[1],
-  //   message: "Wikifolio password",
-  // });
+  const { password } = await prompts({
+    type: "password",
+    name: "password",
+    initial: arg[1],
+    message: "Wikifolio password",
+  });
+
+  // initialize wikifolio instance
+  initWikifolio(email, password);
 
   const portfolios = await getRecordList("Portfolios");
 

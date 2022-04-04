@@ -1,7 +1,7 @@
 import Airtable from "airtable";
 
-const base = new Airtable({ apiKey: "keyJG2PhR478uRcXz" }).base(
-  "appo3dMBuyzzBx9je"
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
+  process.env.AIRTABLE_APP_ID || ""
 );
 
 export async function getRecordList(tableName: string) {

@@ -1,52 +1,25 @@
 import moment from "moment";
-import Api, { Trade } from "wikifolio";
+import Api, { Trade, Wikifolio } from "wikifolio";
 import {
   AirtableRecordInterface,
   PortfolioInterface,
   StockInterface,
 } from "../types";
 
-const email = "becomebasti@gmail.com";
+let wikifolioApi: Api;
 
-const password = "utdCsadydmIm";
-
-const wikifolioApi = new Api({ email, password });
+export function initWikifolio(email: string, password: string) {
+  wikifolioApi = new Api({ email, password });
+}
 
 export const getLast24Trades = async (
   porfolios: AirtableRecordInterface<PortfolioInterface>[],
   cb: (trades: StockInterface[]) => void
 ) => {
   let trades: StockInterface[] = [];
-  let i = 0;
 
   if (!porfolios.length) return trades;
 
-  // Async custom loop
-  // async function customLoop() {
-  //   setTimeout(async function () {
-  //     const _trades = (
-  //       await wikifolioApi
-  //         .wikifolio(porfolios[i].fields.ID)
-  //         .trades({ pageSize: 1, page: 1 })
-  //     ).trades;
-
-  //     if (_trades.length) {
-  //       trades.push(mapDataToStockTable(_trades[i], porfolios[i].id));
-  //     }
-
-  //     i++;
-  //     if (i < porfolios.length) {
-  //       customLoop();
-  //     }
-  //   }, 500);
-
-  //   return "done";
-  // }
-
-  // customLoop().then((d) => {
-  //   console.log(d);
-  //   console.log(trades);
-  // });
   const last24h = moment().subtract(24, "hours").format();
 
   async function asyncLoop() {
@@ -82,5 +55,3 @@ function mapDataToStockTable(
     PortfolioID: portfolioId,
   };
 }
-
-export default wikifolioApi;

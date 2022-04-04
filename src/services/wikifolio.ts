@@ -29,7 +29,6 @@ export const getLast24Trades = async (
           .wikifolio(porfolios[i].fields.ID)
           .trades({ pageSize: 1 })
       ).trades.filter((t) => moment(t.executionDate).format() > last24h);
-      console.log(_trades);
       // push trades to array
       _trades.forEach((t) => {
         trades.push(mapDataToStockTable(t, porfolios[i].id));

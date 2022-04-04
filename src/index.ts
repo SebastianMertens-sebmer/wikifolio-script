@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import moment from "moment";
 import prompts from "prompts";
 import { createRecords, getRecordList } from "./services/airtable";

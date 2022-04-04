@@ -39,7 +39,7 @@ import { getLast24Trades, initWikifolio } from "./services/wikifolio";
     try {
       if (data.length) {
         console.log(`[+] ${data.length} trades found in last 24 hours.`);
-        await createRecords("Stocks", tradeRecords);
+        await createRecords("Stocks", tradeRecords.slice(0, 10));
         console.log(`[+] ${data.length} trades inserted into Database`);
       } else {
         console.log(`[-] No trades found in last 24 hours.`);

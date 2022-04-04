@@ -27,7 +27,7 @@ export const getLast24Trades = async (
       const _trades = (
         await wikifolioApi
           .wikifolio(porfolios[i].fields.ID)
-          .trades({ pageSize: 1, page: 1 })
+          .trades({ pageSize: 100, page: 1 })
       ).trades.filter((t) => moment(t.executionDate).format() > last24h);
       // push trades to array
       _trades.forEach((t) => {

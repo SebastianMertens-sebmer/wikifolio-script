@@ -29,15 +29,21 @@ export const getLast24Trades = async (
           .wikifolio(porfolios[i].fields.ID)
           .trades({ pageSize: 1, page: 1 })
       ).trades.filter((t) => moment(t.executionDate).format() > last24h);
-
-      trades.push(mapDataToStockTable(_trades[i], porfolios[i].id));
+      // push trades to array
+      _trades.forEach((t) => {
+        trades.push(mapDataToStockTable(t, porfolios[i].id));
+      });
     }
     return trades;
   }
 
-  asyncLoop().then((data) => {
-    cb(data);
-  });
+  asyncLoop()
+    .then((data) => {
+      cb(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 function mapDataToStockTable(

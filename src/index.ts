@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import prompts from "prompts";
+
 import { createRecords, getRecordList } from "./services/airtable";
 import { getLast24Trades, initWikifolio } from "./services/wikifolio";
 
@@ -27,9 +28,11 @@ import { getLast24Trades, initWikifolio } from "./services/wikifolio";
   // initialize wikifolio instance
   initWikifolio(email, password);
 
+  console.log("Fetching....");
+
   const portfolios = await getRecordList("Portfolios");
 
-  await getLast24Trades([portfolios[0]], async (data) => {
+  await getLast24Trades(portfolios, async (data) => {
     const tradeRecords = data.map((d) => ({
       fields: { ...d, PortfolioID: [d.PortfolioID] },
     }));

@@ -8,36 +8,36 @@ import db from "./utils/db";
 
 import { getLast24Trades, initWikifolio } from "./services/wikifolio";
 
-// connect to db;
-db();
-
-(async () => {
+async function init() {
   console.warn("Your credentials will not be stored.");
 
   const arg = (process.argv || []).slice(2);
 
-  // const { email } = await prompts({
-  //   type: "text",
-  //   name: "email",
-  //   initial: arg[0],
-  //   message: "Wikifolio email",
-  // });
+  const { email } = await prompts({
+    type: "text",
+    name: "email",
+    initial: arg[0],
+    message: "Wikifolio email",
+  });
 
-  // const { password } = await prompts({
-  //   type: "password",
-  //   name: "password",
-  //   initial: arg[1],
-  //   message: "Wikifolio password",
-  // });
+  const { password } = await prompts({
+    type: "password",
+    name: "password",
+    initial: arg[1],
+    message: "Wikifolio password",
+  });
+
+  if (!email || !password) {
+    console.log("Email and password are required");
+    return process.exit();
+  }
 
   // // initialize wikifolio instance
-  initWikifolio("becomebasti@gmail.com", "utdCsadydmIm");
+  initWikifolio(email, password);
 
   console.log("Fetching....");
 
   const portfolios = await getPortfolios();
-
-  // const portfolios = await getRecordList("Portfolios");
 
   await getLast24Trades(portfolios, async (data) => {
     try {
@@ -53,5 +53,13 @@ db();
       console.log(error);
       process.exit();
     }
+  });
+}
+
+(async () => {
+  // connect to db;
+  db(() => {
+    // init app
+    init();
   });
 })();

@@ -1,10 +1,6 @@
 import moment from "moment";
-import Api, { Trade, Wikifolio } from "wikifolio";
-import {
-  AirtableRecordInterface,
-  PortfolioInterface,
-  StockInterface,
-} from "../types";
+import Api, { Trade } from "wikifolio";
+import { PortfolioInterface, StockInterface } from "../types";
 
 let wikifolioApi: Api;
 
@@ -13,7 +9,7 @@ export function initWikifolio(email: string, password: string) {
 }
 
 export const getLast24Trades = async (
-  porfolios: AirtableRecordInterface<PortfolioInterface>[],
+  porfolios: PortfolioInterface[],
   cb: (trades: StockInterface[]) => void
 ) => {
   let trades: StockInterface[] = [];
@@ -25,13 +21,11 @@ export const getLast24Trades = async (
   async function asyncLoop() {
     for (let i = 0; i < porfolios.length; i++) {
       const _trades = (
-        await wikifolioApi
-          .wikifolio(porfolios[i].fields.ID)
-          .trades({ pageSize: 1 })
+        await wikifolioApi.wikifolio(porfolios[i].ID).trades({ pageSize: 1 })
       ).trades.filter((t) => moment(t.executionDate).format() > last24h);
       // push trades to array
       _trades.forEach((t) => {
-        trades.push(mapDataToStockTable(t, porfolios[i].id));
+        trades.push(mapDataToStockTable(t, porfolios[i]._id));
       });
     }
     return trades;
@@ -51,13 +45,13 @@ function mapDataToStockTable(
   portfolioId: string
 ): StockInterface {
   return {
-    Stockname: trade.name,
+    stockName: trade.name || "",
     ISIN: trade.isin,
-    "Weighted 100x": trade.weightage + "",
-    Type: trade.type,
-    Amount: trade.executionPrice + "",
-    Link: trade.link,
-    Purchasedate: trade.executionDate,
-    PortfolioID: portfolioId,
+    weighted: trade.weightage + "",
+    type: trade.type,
+    amount: trade.executionPrice + "",
+    link: trade.link || "",
+    purchaseDate: trade.executionDate,
+    portfolioID: portfolioId,
   };
 }

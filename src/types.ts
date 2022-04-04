@@ -1,9 +1,9 @@
 export interface PortfolioInterface {
+  _id?: any;
   ID: string;
   Name: string;
   Link: string;
   Trader: String;
-  Stocks?: any;
 }
 
 export interface AirtableRecordInterface<T> {
@@ -13,12 +13,13 @@ export interface AirtableRecordInterface<T> {
 }
 
 export interface StockInterface {
-  Stockname: string | undefined;
+  _id?: any;
+  stockName: string;
   ISIN: string | undefined;
-  Purchasedate: string | undefined;
-  Amount: string;
-  "Weighted 100x": string;
-  Type: any;
-  Link: string | undefined;
-  PortfolioID: string;
+  purchaseDate: string | undefined;
+  amount: string;
+  weighted: string;
+  type: any;
+  link: string;
+  portfolioID: any;
 }

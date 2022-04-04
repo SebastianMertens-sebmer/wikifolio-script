@@ -2,44 +2,48 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import prompts from "prompts";
+import { getPortfolios } from "./controllers/portfolios";
+import { createStocks } from "./controllers/stocks";
+import db from "./utils/db";
 
-import { createRecords, getRecordList } from "./services/airtable";
 import { getLast24Trades, initWikifolio } from "./services/wikifolio";
+
+// connect to db;
+db();
 
 (async () => {
   console.warn("Your credentials will not be stored.");
 
   const arg = (process.argv || []).slice(2);
 
-  const { email } = await prompts({
-    type: "text",
-    name: "email",
-    initial: arg[0],
-    message: "Wikifolio email",
-  });
+  // const { email } = await prompts({
+  //   type: "text",
+  //   name: "email",
+  //   initial: arg[0],
+  //   message: "Wikifolio email",
+  // });
 
-  const { password } = await prompts({
-    type: "password",
-    name: "password",
-    initial: arg[1],
-    message: "Wikifolio password",
-  });
+  // const { password } = await prompts({
+  //   type: "password",
+  //   name: "password",
+  //   initial: arg[1],
+  //   message: "Wikifolio password",
+  // });
 
-  // initialize wikifolio instance
-  initWikifolio(email, password);
+  // // initialize wikifolio instance
+  initWikifolio("becomebasti@gmail.com", "utdCsadydmIm");
 
   console.log("Fetching....");
 
-  const portfolios = await getRecordList("Portfolios");
+  const portfolios = await getPortfolios();
+
+  // const portfolios = await getRecordList("Portfolios");
 
   await getLast24Trades(portfolios, async (data) => {
-    const tradeRecords = data.map((d) => ({
-      fields: { ...d, PortfolioID: [d.PortfolioID] },
-    }));
     try {
       if (data.length) {
         console.log(`[+] ${data.length} trades found in last 24 hours.`);
-        await createRecords("Stocks", tradeRecords.slice(0, 10));
+        await createStocks(data);
         console.log(`[+] ${data.length} trades inserted into Database`);
       } else {
         console.log(`[-] No trades found in last 24 hours.`);

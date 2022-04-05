@@ -1,12 +1,12 @@
 import moment from "moment";
 import Api, { Trade } from "wikifolio";
+import config from "../config/config.json";
 import { PortfolioInterface, StockInterface } from "../types";
 
-let wikifolioApi: Api;
-
-export function initWikifolio(email: string, password: string) {
-  wikifolioApi = new Api({ email, password });
-}
+let wikifolioApi = new Api({
+  email: config.WIKIFOLIO_EMAIL,
+  password: config.WIKIFOLIO_PASSWORD,
+});
 
 export const getLast24Trades = async (
   porfolios: PortfolioInterface[],

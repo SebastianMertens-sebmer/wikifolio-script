@@ -9,5 +9,6 @@ export default async function (cb: () => void) {
   } catch (error) {
     console.log(error);
     console.log("DB connection failed");
+    process.exit();
   }
 }

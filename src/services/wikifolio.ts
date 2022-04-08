@@ -16,13 +16,16 @@ export const getLast24Trades = async (
 
   if (!porfolios.length) return trades;
 
-  const last24h = moment().subtract(24, "hours").format();
+  // time in minutes by default 1440mins (24h)
+  const timeInMins = moment()
+    .subtract(config.TIME_IN_MINUTES || 1440, "minutes")
+    .format();
 
   async function asyncLoop() {
     for (let i = 0; i < porfolios.length; i++) {
       const _trades = (
         await wikifolioApi.wikifolio(porfolios[i].ID).trades({ pageSize: 100 })
-      ).trades.filter((t) => moment(t.executionDate).format() > last24h);
+      ).trades.filter((t) => moment(t.executionDate).format() > timeInMins);
       // push trades to array
       _trades.forEach((t) => {
         trades.push(mapDataToStockTable(t, porfolios[i]._id));

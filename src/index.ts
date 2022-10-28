@@ -1,35 +1,21 @@
-import { getPortfolios } from "./controllers/portfolios";
-import { createStocks } from "./controllers/stocks";
-import db from "./utils/db";
+import path from "path";
+import * as dotenv from "dotenv";
+dotenv.config({ path: path.resolve(__dirname, "./.env") });
 
-import { getLast24Trades } from "./services/wikifolio";
+import express from "express";
+import config from "./config/config";
+const app = express();
 
-async function init() {
-  console.log("Fetching....");
+app.use(express.json());
 
-  const portfolios = await getPortfolios();
+// Routes
+import portfoliosRoutes from "./routes/portfolios";
+import stocksRoutes from "./routes/stocks";
 
-  await getLast24Trades(portfolios, async (data) => {
-    try {
-      if (data.length) {
-        console.log(`[+] ${data.length} trades found.`);
-        await createStocks(data);
-        console.log(`[+] ${data.length} trades inserted into Database`);
-      } else {
-        console.log(`[-] No trades found.`);
-      }
-      process.exit();
-    } catch (error) {
-      console.log(error);
-      process.exit();
-    }
-  });
-}
+// Mount routes
+app.use("/api/portfolios", portfoliosRoutes);
+app.use("/api/stocks", stocksRoutes);
 
-(async () => {
-  // connect to db;
-  db(() => {
-    // init app
-    init();
-  });
-})();
+app.listen(config.PORT, () => {
+  console.log(`Listing on port ${config.PORT}`);
+});

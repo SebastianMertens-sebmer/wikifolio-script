@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import config from "../config/config.json";
+import config from "../config/config";
 
 export default async function (cb: () => void) {
   try {

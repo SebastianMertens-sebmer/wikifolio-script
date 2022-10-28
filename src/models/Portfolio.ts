@@ -1,11 +1,15 @@
-import mongoose from "mongoose";
+import supabase from "../services/supabase";
 import { PortfolioInterface } from "../types";
+const tableName = "portfolios";
 
-const schema = new mongoose.Schema<PortfolioInterface>({
-  Name: String,
-  Link: String,
-  ID: String,
-  Trader: String,
-});
+class Portfolio {
+  static create(data: PortfolioInterface) {
+    return supabase.from(tableName).insert(data);
+  }
 
-export default mongoose.model("Portfolio", schema);
+  static find(q = "*") {
+    return supabase.from(tableName).select(q);
+  }
+}
+
+export default Portfolio;

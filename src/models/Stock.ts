@@ -1,18 +1,18 @@
+import { PostgrestResponse } from "@supabase/supabase-js";
 import mongoose from "mongoose";
+import supabase from "../services/supabase";
 import { StockInterface } from "../types";
 
-const schema = new mongoose.Schema<StockInterface>({
-  stockName: String,
-  ISIN: String,
-  purchaseDate: String,
-  amount: String,
-  weighted: String,
-  type: String,
-  link: String,
-  portfolioID: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: "Portfolio",
-  },
-});
+const tableName = "stocks";
 
-export default mongoose.model("Stock", schema);
+class Stock {
+  static async create(stocks: StockInterface[]) {
+    return await supabase.from(tableName).insert(stocks);
+  }
+
+  static find(q = "*") {
+    return supabase.from(tableName).select(q);
+  }
+}
+
+export default Stock;

@@ -1,5 +1,7 @@
+import { PostgrestResponse } from "@supabase/supabase-js";
+
 export interface PortfolioInterface {
-  _id?: any;
+  id?: any;
   ID: string;
   Name: string;
   Link: string;
@@ -13,7 +15,7 @@ export interface AirtableRecordInterface<T> {
 }
 
 export interface StockInterface {
-  _id?: any;
+  id?: any;
   stockName: string;
   ISIN: string | undefined;
   purchaseDate: string | undefined;

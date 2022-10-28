@@ -1,6 +1,6 @@
 import moment from "moment";
 import Api, { Trade } from "wikifolio";
-import config from "../config/config.json";
+import config from "../config/config";
 import { PortfolioInterface, StockInterface } from "../types";
 
 let wikifolioApi = new Api({
@@ -28,7 +28,7 @@ export const getLast24Trades = async (
       ).trades.filter((t) => moment(t.executionDate).format() > timeInMins);
       // push trades to array
       _trades.forEach((t) => {
-        trades.push(mapDataToStockTable(t, porfolios[i]._id));
+        trades.push(mapDataToStockTable(t, porfolios[i].id));
       });
     }
     return trades;

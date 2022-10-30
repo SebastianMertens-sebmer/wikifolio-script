@@ -1,6 +1,8 @@
 import moment from "moment";
 import Api, { Trade } from "wikifolio";
 import config from "../config/config";
+import Portfolio from "../models/Portfolio";
+import Stock from "../models/Stock";
 import { PortfolioInterface, StockInterface } from "../types";
 
 let wikifolioApi = new Api({
@@ -8,13 +10,10 @@ let wikifolioApi = new Api({
   password: config.WIKIFOLIO_PASSWORD,
 });
 
-export const getLast24Trades = async (
-  porfolios: PortfolioInterface[],
-  cb: (trades: StockInterface[]) => void
-) => {
-  let trades: StockInterface[] = [];
+export const getLast24Stocks = async (porfolios: PortfolioInterface[]) => {
+  let stocks: StockInterface[] = [];
 
-  if (!porfolios.length) return trades;
+  if (!porfolios.length) return stocks;
 
   // time in minutes by default 1440mins (24h)
   const timeInMins = moment()
@@ -23,24 +22,51 @@ export const getLast24Trades = async (
 
   async function asyncLoop() {
     for (let i = 0; i < porfolios.length; i++) {
-      const _trades = (
+      const _stocks = (
         await wikifolioApi.wikifolio(porfolios[i].ID).trades({ pageSize: 100 })
       ).trades.filter((t) => moment(t.executionDate).format() > timeInMins);
-      // push trades to array
-      _trades.forEach((t) => {
-        trades.push(mapDataToStockTable(t, porfolios[i].id));
+      // push stocks to array
+      _stocks.forEach((t) => {
+        stocks.push(mapDataToStockTable(t, porfolios[i].id));
       });
     }
-    return trades;
+    return stocks;
   }
 
-  asyncLoop()
-    .then((data) => {
-      cb(data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  return await asyncLoop();
+};
+
+export const saveAndGetLast24Stocks = async () => {
+  const { error, data } = await Portfolio.find();
+  if (!error) {
+    // @ts-ignore
+    const stocks = await getLast24Stocks(data.slice(0, 9));
+
+    const stockIds = stocks.map((t) => t.stockId);
+    // Delete duplicate stocks
+    await Stock.deleteMany("stockId", stockIds);
+
+    await Stock.create(stocks);
+
+    return stocks;
+  } else {
+    return null;
+  }
+};
+
+export const saveStocksAfterTimeInterval = () => {
+  try {
+    // Default 5 minutes
+    let miliSec =
+      Number.parseFloat(config.SAVE_STOCKS_TIME_INTERVAL_IN_MINUTES || "5") *
+      60000;
+
+    setInterval(async () => {
+      await saveAndGetLast24Stocks();
+    }, miliSec);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 function mapDataToStockTable(
@@ -48,9 +74,10 @@ function mapDataToStockTable(
   portfolioId: string
 ): StockInterface {
   return {
+    stockId: trade.id,
     stockName: trade.name || "",
     ISIN: trade.isin,
-    weighted: trade.weightage + "",
+    weight: trade.weightage + "",
     type: trade.type,
     amount: trade.executionPrice + "",
     link: trade.link || "",

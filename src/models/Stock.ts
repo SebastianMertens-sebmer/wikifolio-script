@@ -1,5 +1,3 @@
-import { PostgrestResponse } from "@supabase/supabase-js";
-import mongoose from "mongoose";
 import supabase from "../services/supabase";
 import { StockInterface } from "../types";
 
@@ -11,7 +9,11 @@ class Stock {
   }
 
   static find(q = "*") {
-    return supabase.from(tableName).select(q);
+    return supabase.from(tableName).select(q).order("id", { ascending: false });
+  }
+
+  static deleteMany(column: string, values: any[]) {
+    return supabase.from(tableName).delete().in(column, values);
   }
 }
 

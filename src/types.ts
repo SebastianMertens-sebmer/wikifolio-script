@@ -8,20 +8,15 @@ export interface PortfolioInterface {
   Trader: String;
 }
 
-export interface AirtableRecordInterface<T> {
-  id: string;
-  createdTime: string;
-  fields: T;
-}
-
 export interface StockInterface {
   id?: any;
+  stockId: any;
   stockName: string;
   ISIN: string | undefined;
   purchaseDate: string | undefined;
   amount: string;
-  weighted: string;
-  type: any;
+  weight: string;
+  type: "buy" | "sell" | "other" | undefined;
   link: string;
   portfolioID: any;
 }

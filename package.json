@@ -4,8 +4,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
-    "start": "tsc && node ./dist",
-    "build": "rm -rf ./dist && tsc"
+    "start": "node ./dist",
+    "build-linux": "rm -rf ./dist && tsc",
+    "build-win": "tsc",
+    "postinstall": "rm -rf ./dist && tsc"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.0.4",

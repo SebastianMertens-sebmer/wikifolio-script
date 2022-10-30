@@ -40,7 +40,7 @@ export const saveAndGetLast24Stocks = async () => {
   const { error, data } = await Portfolio.find();
   if (!error) {
     // @ts-ignore
-    const stocks = await getLast24Stocks(data.slice(0, 9));
+    const stocks = await getLast24Stocks(data);
 
     const stockIds = stocks.map((t) => t.stockId);
     // Delete duplicate stocks

@@ -2,19 +2,21 @@ import path from "path";
 import * as dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-import express, { Request, Response } from "express";
+import express, { Response } from "express";
 import config from "./config/config";
 const app = express();
 
+import auth from "./middlewares/auth";
 // Routes
 import portfoliosRoutes from "./routes/portfolios";
 import stocksRoutes from "./routes/stocks";
-
 import { saveStocksAfterTimeInterval } from "./services/wikifolio";
 
 // App config
 app.use(express.json());
 
+// Auth middleware
+app.use(auth);
 // Mount routes
 app.use("/api/portfolios", portfoliosRoutes);
 app.use("/api/stocks", stocksRoutes);

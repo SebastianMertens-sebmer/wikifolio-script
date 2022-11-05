@@ -7,4 +7,5 @@ export default {
   SUPABASE_KEY: process.env.SUPABASE_KEY || "",
   SAVE_STOCKS_TIME_INTERVAL_IN_MINUTES:
     process.env.SAVE_STOCKS_TIME_INTERVAL_IN_MINUTES,
+  API_ACCESS_KEY_SECRET: process.env.API_ACCESS_KEY_SECRET || "",
 };

@@ -4,6 +4,7 @@ import config from "../config/config";
 import Portfolio from "../models/Portfolio";
 import Stock from "../models/Stock";
 import { PortfolioInterface, StockInterface } from "../types";
+import convertToString from "../utils/convertToString";
 
 let wikifolioApi = new Api({
   email: config.WIKIFOLIO_EMAIL,
@@ -40,7 +41,11 @@ export const saveAndGetLast24Stocks = async () => {
   const { error, data } = await Portfolio.find();
   if (!error) {
     // @ts-ignore
-    const stocks = await getLast24Stocks(data);
+    const stocks = (await getLast24Stocks(data)).map((s) => ({
+      ...s,
+      amount: convertToString(s.amount),
+      weight: convertToString(s.weight),
+    }));
 
     const stockIds = stocks.map((t) => t.stockId);
     // Delete duplicate stocks
